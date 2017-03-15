@@ -69,9 +69,16 @@
 
       function makeMap(error, countries, perOfGdp) {
 
-        var breaks = ss.jenks(perOfGdp.map(function(d){
-            return d.y_2000;
-        }), 5);
+        var dataArray = []; // empty array
+
+        perOfGdp.forEach(function(country) {
+            if(Number(country.y_2000)) {  // if can be converted to number
+                dataArray.push(Number(country.y_2000))  // push to an array
+            }
+        })
+        console.log(dataArray) // dataArray with only numbers
+
+        var breaks = ss.jenks(dataArray, 5);  // the breaks
 
         console.log(breaks)
 
