@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>A Decade of Terrorism</title>
+  <link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+    <style>
+            h1,h2 {
+                position: absolute;
+                left: 20px;
+                top: 10px;
+                font-size: 2em;
+                font-weight: 100;
+                color: #005DAA;
+            }
+            h2 {
+                top: 60px;
+                font-size: 1.2em;
+            }
+            #map {
+                width: 900px;
+                height: 600px;
+                margin: 10px auto;
+                border: 2px solid #d3d3d3;
+            }
+            body {
+                padding: 0;
+                margin: 0;
+                background: whitesmoke;
+                font-family: Raleway, sans-serif;
+            }
+
+      </style>
+  </head>
+  <body>
+
+      <h1>A Decade of Terrorism</h1>
+      <div id="map"></div>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+      <script src="https://d3js.org/d3-array.v1.min.js"></script>
+      <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+      <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
+
+      <script>
+
+        var width = 900,
+            height = 600;
+
+        var svg = d3.select("#map")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var projection = d3.geoRobinson()
+            .center([4, 0.0])
+            .scale(180)
+            .translate([width/2, height/2]);
+
+        var geoPath = d3.geo.path()
+            .projection(projection);
+
+        queue()
+            .defer(d3.json, "data/countries_geo.json")
+            .defer(d3.csv, "data/mil_xpnd.csv")
+            .await(makeMap);
+
+      function makeMap(error, countries, perOfGdp) {
+
+        var breaks = ss.jenks(perOfGdp.map(function(d){
+            return d.y_2000;
+        }), 5);
+
+        console.log(breaks)
+
+        breaks.shift();
+        breaks.pop();
+
+        var colors = ["#feedde","#fdbe85","#fd8d3c","#e6550d","#a63603"];
+
+        var jenks = d3.scale.threshold()
+            .domain(breaks)
+            .range(colors);
+
+        svg.append("g")
+            .selectAll("path")
+            .data(countries.features)
+            .enter()
+            .append("path")
+            .attr("d", geoPath)
+            .attr("class", "countries");
+
+        svg.append("g")
+            .selectAll("path")
+            .data(perOfGdp)
+            .enter()
+            .append("path")
+            .attr("d", geoPath)
+            .attr("class", "tbd")
+            .attr("fill", function(d) {
+                return jenks(d.y_2001);
+            });
+
+
+
+
+      } // end of makeMap()
+
+      </script>
+  </body>
+</html>
