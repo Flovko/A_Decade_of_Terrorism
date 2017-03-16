@@ -29,6 +29,9 @@
                 background: whitesmoke;
                 font-family: Raleway, sans-serif;
             }
+            .countries {
+                stroke: white;
+            }
 
       </style>
   </head>
@@ -69,6 +72,11 @@
 
       function makeMap(error, countries, perOfGdp) {
 
+<<<<<<< HEAD
+        var breaks = ss.jenks(perOfGdp.map(function(d){
+            return d.y_2001;
+        }), 5);
+=======
         var dataArray = []; // empty array
 
         perOfGdp.forEach(function(country) {
@@ -79,6 +87,7 @@
         console.log(dataArray) // dataArray with only numbers
 
         var breaks = ss.jenks(dataArray, 5);  // the breaks
+>>>>>>> origin/debug-array
 
         console.log(breaks)
 
@@ -105,7 +114,7 @@
             .enter()
             .append("path")
             .attr("d", geoPath)
-            .attr("class", "tbd")
+            .attr("class", "gdp")
             .attr("fill", function(d) {
                 return jenks(d.y_2001);
             });
