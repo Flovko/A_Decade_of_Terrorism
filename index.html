@@ -85,20 +85,40 @@
             }
         });
 
-        console.log(perOfGdp)
-
-        console.log(dataArray) // dataArray with only numbers
+        // console.log(dataArray) // dataArray with only numbers
 
         var breaks = ss.jenks(dataArray, 4);  // the breaks
 
-        console.log(breaks)
+        // console.log(breaks)
 
         breaks.shift();
         breaks.pop();
 
         var colors = ["#feedde","#fdbe85","#fd8d3c","#e6550d","#a63603"];
 
-        console.log(countries)
+
+        // loop through all the countries
+        countries.features.map(function(country) {
+
+            // shortcut for the country id
+            var countryId = country.id;
+
+            // loop through the CSV data array
+            perOfGdp.map(function(countryData) {
+
+                // if country code id and CSV code match
+                if(countryId === countryData['Country Code']) {
+
+                    // replace country props with CSV data
+                    country.properties = countryData;
+                }
+
+            })
+
+        });
+
+        // verify that CSV data is bound to countries here
+        // console.log(countries)
 
         var jenks = d3.scale.threshold()
             .domain(breaks)
@@ -110,17 +130,12 @@
             .enter()
             .append("path")
             .attr("d", geoPath)
-            .attr("class", "countries");
+            .attr("class", "countries")
+            .attr('fill', function(d) {
+                // you have access to each country's data and props here!
+                console.log(d)
+            })
 
-        svg.append("g")
-            .selectAll("path")
-            console.log(countries.features)
-            .data(perOfGdp)
-            .enter()
-            .append("path")
-            .attr("d", geoPath)
-            .attr("class", "gdp")
-            .attr("fill", colors)
 
       } // end of makeMap()
 
