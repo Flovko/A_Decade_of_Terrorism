@@ -31,6 +31,7 @@
             }
             .countries {
                 stroke: white;
+                fill: steelblue;
             }
             .gdp {
                 fill: yellow;
@@ -106,13 +107,14 @@
             .attr("d", geoPath)
             .attr("class", "countries");
 
-        var milSpent = svg.append("g")
+        svg.append("g")
             .selectAll("path")
             .data(perOfGdp)
             .enter()
             .append("path")
             .attr("d", geoPath)
             .attr("class", "gdp")
+            .attr("fill", colors)
 
       } // end of makeMap()
 
