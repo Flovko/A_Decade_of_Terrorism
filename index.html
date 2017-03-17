@@ -80,10 +80,13 @@
         var dataArray = []; // empty array
 
         perOfGdp.forEach(function(country) {
-            if(Number(country.y_2000)) {  // if can be converted to number
-                dataArray.push(Number(country.y_2000))  // push to an array
+            if(Number(country['2000'])) {  // if can be converted to number
+                dataArray.push(Number(country['2000']))  // push to an array
             }
         });
+
+        console.log(perOfGdp)
+
         console.log(dataArray) // dataArray with only numbers
 
         var breaks = ss.jenks(dataArray, 4);  // the breaks
@@ -94,6 +97,8 @@
         breaks.pop();
 
         var colors = ["#feedde","#fdbe85","#fd8d3c","#e6550d","#a63603"];
+
+        console.log(countries)
 
         var jenks = d3.scale.threshold()
             .domain(breaks)
