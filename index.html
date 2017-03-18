@@ -114,6 +114,9 @@
             .append("path")
             .attr("d", geoPath)
             .attr("class", "gdp")
+            .attr("fill", function(d) {
+              return jenks(d.country['2000']);
+            });
 
       } // end of makeMap()
 
