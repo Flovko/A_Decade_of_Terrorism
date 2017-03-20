@@ -19,13 +19,19 @@
             }
             h2 {
                 font-size: 1.5em;
+                font-style: italic;
                 top: 85px;
+            }
+            h3 {
+                font-size: 1.5em;
+                top: 95px;
             }
             p {
                 position: absolute;
                 left: 20px;
                 top: 150px;
                 font-size: 15px;
+                color: #005DAA;
             }
             p2 {
                 position: absolute;
@@ -36,7 +42,7 @@
             #map {
                 width: 900px;
                 height: 600px;
-                margin: 40px 225px auto;
+                margin: 25px 245px auto;
                 border: 2px solid #fff;
             }
             body {
@@ -49,17 +55,17 @@
                 stroke: #5a4a4a;
             }
             .hover{
-                fill: yellow;
+                fill: steelblue;
             }
             .slider {
                 position: absolute;
-                left: 225px;
-                padding-top: 10
+                left: 245px;
+                bottom: 40px;
             }
             #year {
                 position: absolute;
-                left: 265px;
-                padding-top: 22px;
+                left: 285px;
+                padding-top: 5px;
             }
             .attack {
                 fill: yellow;
@@ -73,17 +79,18 @@
       <div id="map"></div>
       <h1>A Decade of<br> Terrorism</h1>
       <h2></h2>
+      <h3></h3>
       <p> The map to the left consist<br>of a base map shaded by <br>the % of GDP spent
           on<br> defense by each nation. <br>The GDP data was<br> obtained from
           <a href src="http://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS"> The World<br>
           Bank</a>. Nation states that <br>are shaded black either<br> do not spend any portion
           <br>of their GDP towards<br> defense or the data is not<br> available.<br> The yellow
           dots<br> represent terrorist attacks<br> that have taken place<br> around the world
-          since <br>1996-2006. The slider bar<br> allows your to cycle<br> through the attacks
+          since <br>1996-2006. The slider bar<br> allows the user to cycle<br> through the attacks
           by<br> year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
-          Database</a> is mainted by<br> the University of Maryland.<br> Please see the <a href src=
+          Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src=
           "http://www.start.umd.edu/gtd/using-gtd/"><br>methodology page</a> for a<br> detailed
-          explination of the<br> data. <br>
+          explanation of the<br> data. <br>
       </p>
       <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p2>
       <div id="slider">
@@ -103,7 +110,8 @@
       <script>
 
         var width = 900,
-            height = 600;
+            height = 600
+            scale0 = (width- 1) / 2 / Math.PI;
 
         var svg = d3.select("#map")
             .append("svg")
@@ -189,15 +197,14 @@
               console.log(d)
             })
             .on("mouseover", function(d){
-              d3.select("h2").text(d.properties.country +': ' + Math.round(d.properties['1996']) +
-                 '% of GDP');
+              d3.select("h2").html(d.properties.country +': '+
+                "<br/>" + Math.round(d.properties['1996']) +'% '+ 'of GDP');
               d3.select(this).attr("class","countries hover");
             })
             .on("mouseout", function(d){
                 d3.select("h2").text("");
                 d3.select(this).attr("class", "countries");
-            });
-
+            })
 
         var terrorInc= svg.append("g")
             .selectAll("path")
