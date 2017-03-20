@@ -3,38 +3,67 @@
   <head>
     <meta charset="UTF-8">
     <title>A Decade of Terrorism</title>
+
   <link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
     <style>
             h1,h2 {
                 position: absolute;
                 left: 20px;
                 top: 10px;
-                font-size: 2em;
                 font-weight: 100;
                 color: #005DAA;
             }
+            h1{
+                font-size: 2em;
+            }
             h2 {
-                top: 60px;
-                font-size: 1.2em;
+                font-size: 1.5em;
+                top: 85px;
+            }
+            p {
+                position: absolute;
+                left: 20px;
+                top: 150px;
+                font-size: 15px;
+            }
+            p2 {
+                position: absolute;
+                left: 20px;
+                bottom: 20px;
+                font-size: 12px;
             }
             #map {
                 width: 900px;
                 height: 600px;
-                margin: 10px auto;
-                border: 2px solid #d3d3d3;
+                margin: 40px 225px auto;
+                border: 2px solid #fff;
             }
             body {
                 padding: 0;
                 margin: 0;
-                background: whitesmoke;
+                background: #d3d3d3;
                 font-family: Raleway, sans-serif;
             }
             .countries {
-                stroke: white;
-                fill: steelblue;
+                stroke: #5a4a4a;
             }
-            .gdp {
+            .hover{
                 fill: yellow;
+            }
+            .slider {
+                position: absolute;
+                left: 225px;
+                padding-top: 10
+            }
+            #year {
+                position: absolute;
+                left: 265px;
+                padding-top: 22px;
+            }
+            .attack {
+                fill: yellow;
+                fill-opacity: .3;
             }
 
       </style>
@@ -42,8 +71,25 @@
   <body>
 
       <div id="map"></div>
-      <h1>A Decade of Terrorism</h1>
+      <h1>A Decade of<br> Terrorism</h1>
       <h2></h2>
+      <p> The map to the left consist<br>of a base map shaded by <br>the % of GDP spent
+          on<br> defense by each nation. <br>The GDP data was<br> obtained from
+          <a href src="http://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS"> The World<br>
+          Bank</a>. Nation states that <br>are shaded black either<br> do not spend any portion
+          <br>of their GDP towards<br> defense or the data is not<br> available.<br> The yellow
+          dots<br> represent terrorist attacks<br> that have taken place<br> around the world
+          since <br>1996-2006. The slider bar<br> allows your to cycle<br> through the attacks
+          by<br> year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
+          Database</a> is mainted by<br> the University of Maryland.<br> Please see the <a href src=
+          "http://www.start.umd.edu/gtd/using-gtd/"><br>methodology page</a> for a<br> detailed
+          explination of the<br> data. <br>
+      </p>
+      <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p2>
+      <div id="slider">
+        <input type="range" value="0" class="slider">
+        <span id="year"></span>
+      </div>
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
@@ -51,6 +97,8 @@
       <script src="https://d3js.org/d3-geo.v1.min.js"></script>
       <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
+      <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+      <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
       <script>
 
@@ -73,23 +121,22 @@
         queue()
             .defer(d3.json, "data/countries_geo.json")
             .defer(d3.csv, "data/mil_xpnd.csv")
+            .defer(d3.json, "data/decade_of_terrorism.geojson")
             .await(makeMap);
 
-      function makeMap(error, countries, perOfGdp) {
+      function makeMap(error, countries, perOfGdp, attacks) {
 
         var dataArray = []; // empty array
 
         perOfGdp.forEach(function(country) {
-            if(Number(country['2000'])) {  // if can be converted to number
-                dataArray.push(Number(country['2000']))  // push to an array
+            if(Number(country['1996'])) {  // if can be converted to number
+                dataArray.push(Number(country['1996']))  // push to an array
             }
         });
 
         // console.log(dataArray) // dataArray with only numbers
 
         var breaks = ss.jenks(dataArray, 4);  // the breaks
-
-        // console.log(breaks)
 
         breaks.shift();
         breaks.pop();
@@ -107,22 +154,28 @@
             perOfGdp.map(function(countryData) {
 
                 // if country code id and CSV code match
-                if(countryId === countryData['Country Code']) {
+                if(countryId === countryData['country_code']) {
 
                     // replace country props with CSV data
-                    country.properties = countryData;
+                    country.properties = countryData
                 }
 
             })
 
-        });
+        })
 
-        // verify that CSV data is bound to countries here
-        // console.log(countries)
+        var min = 1996,
+            max = 2006;
 
         var jenks = d3.scale.threshold()
             .domain(breaks)
             .range(colors);
+
+        var currentYear = [];
+            attacks.features.map(function(attacks) {
+                  var attackYear = attacks.properties.year
+                  currentYear.push(attackYear)
+            });
 
         svg.append("g")
             .selectAll("path")
@@ -131,24 +184,53 @@
             .append("path")
             .attr("d", geoPath)
             .attr("class", "countries")
-            .attr('fill', function(d) {
-                // you have access to each country's data and props here!
-                console.log(d)
+            .attr("fill", function(d) {
+              return jenks(d.properties['1996']);
+              console.log(d)
             })
+            .on("mouseover", function(d){
+              d3.select("h2").text(d.properties.country +': ' + Math.round(d.properties['1996']) +
+                 '% of GDP');
+              d3.select(this).attr("class","countries hover");
+            })
+            .on("mouseout", function(d){
+                d3.select("h2").text("");
+                d3.select(this).attr("class", "countries");
+            });
 
-<<<<<<< HEAD
-        svg.append("g")
+
+        var terrorInc= svg.append("g")
             .selectAll("path")
-            .data(perOfGdp)
+            .data(attacks.features)
             .enter()
             .append("path")
+            .attr("r", 1)
             .attr("d", geoPath)
-            .attr("class", "gdp")
-            .attr("fill", function(d) {
-              return jenks(d.country['2000']);
+            .attr("class", "attack");
+
+
+        var output =  d3.select("#year").text(min);
+
+            d3.select(".slider")
+            .attr("min", min)
+            .attr("max", max)
+            .attr("value", min)
+            .attr("step", "1")
+            .on("input", function() {
+                update(this.value);
             });
-=======
->>>>>>> origin/master
+
+        function update(val) {
+            output.text(Number(val).toLocaleString());
+            terrorInc.attr("display", function(d) {
+                if(val == Number(d.properties.year)) {
+                  return "none";
+                }
+            })
+        }
+
+
+
 
       } // end of makeMap()
 
