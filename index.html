@@ -55,7 +55,7 @@
                 stroke: #5a4a4a;
             }
             .hover{
-                fill: #005DAA;
+                fill: s;
             }
             .slider {
                 position: absolute;
@@ -235,9 +235,24 @@
                 }
             })
         }
+        // console.log(attacks.features)
+        d3.entries(attacks.features)
 
+        var counts = d3.nest()
+          .key(function(d) {
+              return d.properties.year;
+              })
+          .sortKeys(d3.ascending)
+          .key(function(d) {
+              return d.properties.country_ids;
+              })
+          .sortKeys(d3.alphabetically)
+          .rollup(function(leaves) {
+              return leaves.length;
+          })
+          .entries(attacks.features);
 
-
+          console.log(counts)
 
       } // end of makeMap()
 
