@@ -54,8 +54,8 @@
             .countries {
                 stroke: #5a4a4a;
             }
-            .hover{
-                fill: s;
+            .hover {
+                fill: #005DAA;
             }
             .slider {
                 position: absolute;
@@ -100,12 +100,14 @@
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
-      <script src="https://d3js.org/d3-array.v1.min.js"></script>
+      <script src="https://d3js.org/d3.v4.min.js"></script>
       <script src="https://d3js.org/d3-geo.v1.min.js"></script>
       <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
       <script src="//code.jquery.com/jquery-1.12.4.js"></script>
       <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <script src="https://d3js.org/d3-drag.v1.min.js"></script>
+      <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
 
       <script>
 
@@ -138,7 +140,11 @@
 
         perOfGdp.forEach(function(country) {
             if(Number(country['1996'])) {  // if can be converted to number
-                dataArray.push(Number(country['1996']))  // push to an array
+                  dataArray.push(Number(country['1996']))   // push to an array
+            }   {if(Number(country['1997']))
+                  dataArray.push(Number(country['1997']))
+            }   {if(Number(country['1998']))
+                  dataArray.push(Number(country['1998']))
             }
         });
 
@@ -185,7 +191,7 @@
                   currentYear.push(attackYear)
             });
 
-        svg.append("g")
+        var gdp = svg.append("g")
             .selectAll("path")
             .data(countries.features)
             .enter()
@@ -235,7 +241,7 @@
                 }
             })
         }
-        // console.log(attacks.features)
+
         d3.entries(attacks.features)
 
         var counts = d3.nest()
@@ -251,7 +257,6 @@
               return leaves.length;
           })
           .entries(attacks.features);
-
           console.log(counts)
 
       } // end of makeMap()
