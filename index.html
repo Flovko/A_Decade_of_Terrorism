@@ -8,78 +8,66 @@
     <link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
 
     <style>
+    h1,h2 {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+            font-weight: 100;
+            color: #005DAA;
+        }
+        h1{
+            font-size: 2em;
+        }
+        h2 {
+            font-size: 1.5em;
+            font-style: italic;
+            top: 85px;
+        }
+        h3 {
+            font-size: 1.5em;
+            bottom: 50px;
+        }
+        p {
+            position: absolute;
+            left: 20px;
+            top: 150px;
+            font-size: 15px;
+            color: #005DAA;
+        }
+        p2 {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            font-size: 12px;
+        }
+        #map {
+            width: 900px;
+            height: 600px;
+            margin: 25px 245px auto;
+            border: 2px solid #fff;
+        }
         body {
             padding: 0;
             margin: 0;
             background: #d3d3d3;
             font-family: Raleway, sans-serif;
         }
-
-        h1,
-        h2 {
-            left: 20px;
-            top: 10px;
-            font-weight: 100;
-            color: #005DAA;
-        }
-
-        h1 {
-            font-size: 2em;
-        }
-
-        h2 {
-            font-size: 1.5em;
-            font-style: italic;
-            top: 85px;
-        }
-
-        h3 {
-            font-size: 1.5em;
-            top: 95px;
-        }
-
-        p {
-            left: 20px;
-            top: 150px;
-            font-size: 15px;
-            color: #005DAA;
-        }
-
-        #map {
-            width: 900px;
-            height: 600px;
-            margin: 25px auto;
-            position: relative;
-            float: right;
-            margin-right: 20px;
-        }
-
-        #sidebar {
-            width: 280px;
-            padding: 12px 24px;
-            display: inline-block;
-        }
-
         .countries {
             stroke: #5a4a4a;
         }
-
-        .hover {
+        .hover{
             fill: #005DAA;
         }
-
-        #slider {
+        .slider {
             position: absolute;
-            left: 20px;
-            bottom: 80px;
+            left: 245px;
+            bottom: 40px;
         }
-
         #year {
-            position: absolute;
-            left: 285px;
+            position: relative;
+            /*left: 285px;*/
             padding-top: 5px;
         }
-
         .attack {
             fill: yellow;
             fill-opacity: .3;
@@ -92,17 +80,18 @@
 
 
     <div id='sidebar'>
-        <h1>A Decade of Terrorism</h1>
-        <p> The map to the right consists of a base map shaded by the % of GDP spent on defense by each nation. The GDP data was obtained from
-            <a href src="http://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS"> The World
-              Bank</a>. Nation states that are shaded black either do not spend any portion of their GDP towards defense or the data is not available. The yellow dots represent terrorist attacks that have taken place around the world since
-            1996-2006. The slider bar allows the user to cycle through the attacks by year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism
-              Database</a> is maintained by the University of Maryland. Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology page</a> for a detailed explanation of the data.
+        <h1>A Decade of<br> Terrorism</h1>
+        <p> The map to the right consists<br> of a base map shaded by the<br> % of GDP spent on defense<br> by each nation. The GDP<br> data was obtained from
+        <a href src="http://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS"><br> The World
+        Bank</a>. Nation<br> states that are shaded black<br> either do not spend any<br> portion of their GDP towards<br> defense or the data is not<br> available.<br> The yellow dots<br> represent terrorist attacks <br>that have taken place around<br> the world since
+        1996-2006.<br> The slider bar allows the user<br> to cycle through the attacks<br> by year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
+        Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.
         </p>
-        <p>Map Authored by: Francisco Lovko For: Map673</p>
+        <p2>Map Authored by: Francisco Lovko For: Map673</p2>
     </div>
     <div id="map">
-        <div id="slider">
+    <h2></h2>
+      <div id="slider">
             <input type="range" value="0" class="slider">
             <span id="year"></span>
         </div>
@@ -123,7 +112,7 @@
     <script>
         var width = 900,
             height = 600
-        scale0 = (width - 1) / 2 / Math.PI;
+            scale0 = (width - 1) / 2 / Math.PI;
 
         var svg = d3.select("#map")
             .append("svg")
@@ -146,7 +135,7 @@
         queue()
             .defer(d3.json, "data/countries_geo.json")
             .defer(d3.csv, "data/mil_xpnd.csv")
-            .defer(d3.json, "data/decade_of_terrorism.geojson")
+            .defer(d3.csv, "data/decade_of_terrorism.csv")
             .await(makeMap);
 
         function makeMap(error, countries, perOfGdp, attacks) {
@@ -169,13 +158,12 @@
 
             console.log(dataArray) // dataArray with only numbers
 
-            var breaks = ss.jenks(dataArray, 4); // the breaks
+            var breaks = ss.jenks(dataArray, 5); // the breaks
 
             breaks.shift();
             breaks.pop();
 
             var colors = ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"];
-
 
             // loop through all the countries
             countries.features.map(function(country) {
@@ -204,11 +192,11 @@
                 .domain(breaks)
                 .range(colors);
 
-            var currentYear = [];
-            attacks.features.map(function(attacks) {
-                var attackYear = attacks.properties.year
-                currentYear.push(attackYear)
-            });
+            // var currentYear = [];
+            // attacks.properties.map(function(attacks) {
+            //     var attackYear = attacks.properties.year
+            //     currentYear.push(attackYear)
+            // });
 
             var gdp = svg.append("g")
                 .selectAll("path")
@@ -232,13 +220,21 @@
                 })
 
             var terrorInc = svg.append("g")
-                .selectAll("path")
-                .data(attacks.features)
+                .selectAll("circle")
+                .data(attacks)
                 .enter()
-                .append("path")
-                .attr("r", 1)
+                .append("circle")
+                .attr("cx", function(d) {
+                    d.position = projection([d.lon, d.lat])
+                    return d.position[0];
+                })
+                .attr("cy", function(d) {
+                    return d.position[1];
+                })
+                .attr("r", 1 )
                 .attr("d", geoPath)
                 .attr("class", "attack");
+
 
 
             var output = d3.select("#year").text(min);
@@ -255,27 +251,37 @@
             function update(val) {
                 output.text(Number(val).toLocaleString());
                 terrorInc.attr("display", function(d) {
-                    if (val == Number(d.properties.year)) {
+                    if (val <= Number(d.year)) {
                         return "none";
                     }
                 })
             }
 
-            d3.entries(attacks.features)
+          //   function update(val){
+          //      output.text(Number(val).toLocaleString());
+          //      gdp.attr("display",function(d) {
+          //          if(val <= Number(d.properties['1996'])){
+          //            console.log(d.properties['1996'])
+          //              return "none";
+          //          }
+          //      })
+          //  }
+
+            d3.entries(attacks)
 
             var counts = d3.nest()
                 .key(function(d) {
-                    return d.properties.year;
+                    return d.year;
                 })
                 .sortKeys(d3.ascending)
                 .key(function(d) {
-                    return d.properties.country_ids;
+                    return d.country_ids;
                 })
                 .sortKeys(d3.alphabetically)
                 .rollup(function(leaves) {
                     return leaves.length;
                 })
-                .entries(attacks.features);
+                .entries(attacks);
             console.log(counts)
 
         } // end of makeMap()
