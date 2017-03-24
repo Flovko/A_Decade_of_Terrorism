@@ -42,7 +42,7 @@
         }
         #map {
             width: 900px;
-            height: 600px;
+            height: 625px;
             margin: 25px 245px auto;
             border: 2px solid #fff;
         }
@@ -193,7 +193,7 @@
                 .range(colors);
 
             // var currentYear = [];
-            // attacks.properties.map(function(attacks) {
+            // attacks.properties.year(function(attacks) {
             //     var attackYear = attacks.properties.year
             //     currentYear.push(attackYear)
             // });
@@ -245,27 +245,28 @@
                 .attr("value", min)
                 .attr("step", "1")
                 .on("input", function() {
-                    update(this.value);
+                    update(this.value)
+                    updateOne(this.value);
                 });
 
             function update(val) {
                 output.text(Number(val).toLocaleString());
                 terrorInc.attr("display", function(d) {
-                    if (val <= Number(d.year)) {
+                    if (val == Number(d.year)) {
                         return "none";
                     }
                 })
+
             }
 
-          //   function update(val){
-          //      output.text(Number(val).toLocaleString());
-          //      gdp.attr("display",function(d) {
-          //          if(val <= Number(d.properties['1996'])){
-          //            console.log(d.properties['1996'])
-          //              return "none";
-          //          }
-          //      })
-          //  }
+            function updateOne(val){
+               output.text(Number(val).toLocaleString());
+               gdp.attr("display",function(d) {
+                   if (val <= Number(d.properties['1996'])){
+                       return "none";
+                   }
+               })
+           }
 
             d3.entries(attacks)
 
