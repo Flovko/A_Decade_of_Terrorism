@@ -262,7 +262,7 @@
             function updateOne(val){
                output.text(Number(val).toLocaleString());
                gdp.attr("display",function(d) {
-                   if (val <= Number(d.properties['1996'])){
+                   if (val < Number(d.properties['2006'])){
                        return "none";
                    }
                })
