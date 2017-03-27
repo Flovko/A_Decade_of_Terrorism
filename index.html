@@ -8,7 +8,14 @@
     <link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
 
     <style>
-    h1,h2 {
+    body {
+            padding: 0;
+            margin: 0;
+            background: #d3d3d3;
+            font-family: Raleway, sans-serif;
+        }
+    h1,
+    h2 {
             position: absolute;
             left: 20px;
             top: 10px;
@@ -30,14 +37,14 @@
         p {
             position: absolute;
             left: 20px;
-            top: 150px;
+            top: 110px;
             font-size: 15px;
             color: #005DAA;
         }
         p2 {
             position: absolute;
             left: 20px;
-            bottom: 20px;
+            top: 655px;
             font-size: 12px;
         }
         #map {
@@ -45,12 +52,6 @@
             height: 625px;
             margin: 25px 245px auto;
             border: 2px solid #fff;
-        }
-        body {
-            padding: 0;
-            margin: 0;
-            background: #d3d3d3;
-            font-family: Raleway, sans-serif;
         }
         .countries {
             stroke: #5a4a4a;
@@ -61,16 +62,25 @@
         .slider {
             position: absolute;
             left: 245px;
-            bottom: 40px;
+            top: 655px;
+            padding: 5px;
         }
         #year {
-            position: relative;
-            /*left: 285px;*/
+            position: absolute;
+            top: 675px;
             padding-top: 5px;
         }
-        .attack {
-            fill: yellow;
-            fill-opacity: .3;
+        .hidden {
+            display: none;
+        }
+        div.tooltip {
+            color: #222;
+            background-color: #fff;
+            padding: .5em;
+            text-shadow: #f5f5f5 0 1px 0;
+            border-radius: 2px;
+            opacity: 0.9;
+            position: absolute;
         }
     </style>
 </head>
@@ -81,51 +91,56 @@
 
     <div id='sidebar'>
         <h1>A Decade of<br> Terrorism</h1>
-        <p> The map to the right consists<br> of a base map shaded by the<br> % of GDP spent on defense<br> by each nation. The GDP<br> data was obtained from
-        <a href src="http://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS"><br> The World
-        Bank</a>. Nation<br> states that are shaded black<br> either do not spend any<br> portion of their GDP towards<br> defense or the data is not<br> available.<br> The yellow dots<br> represent terrorist attacks <br>that have taken place around<br> the world since
+        <p> The dots on the map<br> represent terrorist attacks <br>that have taken place around<br> the world from
         1996-2006.<br> The slider bar allows the user<br> to cycle through the attacks<br> by year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
-        Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.
+        Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.  The viewer can<br> also zoom in and out to<br> better view the map.
         </p>
-        <p2>Map Authored by: Francisco Lovko For: Map673</p2>
+        <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p2>
     </div>
     <div id="map">
     <h2></h2>
-      <div id="slider">
-            <input type="range" value="0" class="slider">
-            <span id="year"></span>
-        </div>
+    <div id="slider">
+        <input type="range" value="1996" class="slider">
+        <span id="year"></span>
+    </div>
+    <div id='tooltip'></div>
+
     </div>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
     <script src="https://d3js.org/d3-geo.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://d3js.org/d3-drag.v1.min.js"></script>
     <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
+    <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
 
     <script>
         var width = 900,
             height = 600
             scale0 = (width - 1) / 2 / Math.PI;
 
+        var tooltip = d3.select('#map').append('div')
+            .attr('class', 'hidden tooltip');
+
+
         var svg = d3.select("#map")
             .append("svg")
             .attr("width", width)
             .attr("height", height)
-            .call(d3.behavior.zoom().on("zoom", function () {
+            .call(d3.behavior.zoom()
+            .on("zoom", function () {
             svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
             }))
             .append("g")
 
 
         var projection = d3.geoRobinson()
-            .center([4, 0.0])
+            .center([10.0, 20])
             .scale(180)
             .translate([width / 2, height / 2]);
 
@@ -185,18 +200,15 @@
 
             })
 
-            var min = 1996,
-                max = 2006;
-
             var jenks = d3.scale.threshold()
                 .domain(breaks)
                 .range(colors);
 
-            // var currentYear = [];
-            // attacks.properties.year(function(attacks) {
-            //     var attackYear = attacks.properties.year
-            //     currentYear.push(attackYear)
-            // });
+            var currentYear = [];
+            attacks.forEach(function(attacks) {
+                var attackYear = attacks.year
+                currentYear.push(attackYear)
+            });
 
             var gdp = svg.append("g")
                 .selectAll("path")
@@ -205,25 +217,26 @@
                 .append("path")
                 .attr("d", geoPath)
                 .attr("class", "countries")
-                .attr("fill", function(d) {
-                    return jenks(d.properties['1996']);
-                    console.log(d)
-                })
-                .on("mouseover", function(d) {
-                    d3.select("h2").html(d.properties.country + ': ' +
-                        "<br/>" + Math.round(d.properties['1996']) + '% ' + 'of GDP');
-                    d3.select(this).attr("class", "countries hover");
-                })
-                .on("mouseout", function(d) {
-                    d3.select("h2").text("");
-                    d3.select(this).attr("class", "countries");
-                })
+                .attr("fill", "#313131")
+                // function(d) {
+                //     return jenks(d.properties["1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006"]);
+                // })
+                // .on("mouseover", function(d) {
+                //     d3.select("h2").html(d.properties.country + ': ' +
+                //         "<br/>" + Math.round(d.properties['1996']) + '% ' + 'of GDP');
+                //     d3.select(this).attr("class", "countries hover");
+                // })
+                // .on("mouseout", function(d) {
+                //     d3.select("h2").text("");
+                //     d3.select(this).attr("class", "countries");
+                // })
 
             var terrorInc = svg.append("g")
                 .selectAll("circle")
                 .data(attacks)
                 .enter()
                 .append("circle")
+                .attr("fill", yearMatch)
                 .attr("cx", function(d) {
                     d.position = projection([d.lon, d.lat])
                     return d.position[0];
@@ -233,40 +246,94 @@
                 })
                 .attr("r", 1 )
                 .attr("d", geoPath)
-                .attr("class", "attack");
+                .attr("class", "yearMatch")
+                .on('mousemove', function(d, counts) {
+                  var mouse = d3.mouse(svg.node()).map(function(d){
+                    return parseInt(d);
+                  });
+                tooltip.classed('hidden', false)
+                    .attr('style', 'center:' + (mouse[0,0]) +
+                            'px; center:' + (mouse[0,0]) + 'px')
+                    tooltip.html(d.country_txt+ "<br>" + d.city +"<br/>" + d.year);
+                })
+                .on('mouseout', function() {
+                    tooltip.classed('hidden',true)
+                });
 
-
+            var min = 1996,
+                max = 2006;
 
             var output = d3.select("#year").text(min);
 
             d3.select(".slider")
                 .attr("min", min)
                 .attr("max", max)
-                .attr("value", min)
+                .attr("value", max)
                 .attr("step", "1")
                 .on("input", function() {
                     update(this.value)
-                    updateOne(this.value);
+                    // updateOne(this.value);
                 });
 
             function update(val) {
                 output.text(Number(val).toLocaleString());
                 terrorInc.attr("display", function(d) {
-                    if (val == Number(d.year)) {
+                    if (val < Number(d.year)) {
                         return "none";
                     }
                 })
 
             }
 
-            function updateOne(val){
-               output.text(Number(val).toLocaleString());
-               gdp.attr("display",function(d) {
-                   if (val < Number(d.properties['2006'])){
-                       return "none";
-                   }
-               })
-           }
+          //   function updateOne(val){
+          //      output.text(Number(val).toLocaleString());
+          //      gdp.attr("fill",function(d) {
+          //          if (val > Number(d.properties["1996"])) {
+          //          }
+          //      })
+          //  }
+           d3.selectAll(".yearMatch")
+
+            function yearMatch(attacks,terrorInc) {
+
+                  var d = Number(attacks.year)
+                  if (d == ['2006']) {
+                    console.log()
+                    this.parentElement.appendChild(this);
+                    return "#a50026";
+                  }
+                  if (d== ['2005']) {
+                    return "#d73027";
+                  }
+                  if (d== ['2004']) {
+                    return "pink";
+                  }
+                  if (d== ['2003']) {
+                    return "#fdae61";
+                  }
+                  if (d== ['2002']) {
+                    return "#fee08b";
+                  }
+                  if (d== ['2001']) {
+                    return "#d9ef8b";
+                  }
+                  if (d== ['2000']) {
+                    return "#a6d96a";
+                  }
+                  if (d== ['1999']) {
+                    return "#66bd63";
+                  }
+                  if (d== ['1998']) {
+                    return "#1a9850";
+                  }
+                  if (d== ['1997']) {
+                    return "#006837";
+                  }
+                  if (d== ['1996']) {
+                    return "#1a9850";
+                  }
+
+            }
 
             d3.entries(attacks)
 
@@ -276,14 +343,14 @@
                 })
                 .sortKeys(d3.ascending)
                 .key(function(d) {
-                    return d.country_ids;
+                    return d.country_txt;
                 })
                 .sortKeys(d3.alphabetically)
                 .rollup(function(leaves) {
                     return leaves.length;
                 })
                 .entries(attacks);
-            console.log(counts)
+
 
         } // end of makeMap()
     </script>
