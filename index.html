@@ -41,6 +41,11 @@
             font-size: 15px;
             color: #005DAA;
         }
+        img {
+            position: absolute;
+            left: 20px;
+            top: 420px;
+        }
         p2 {
             position: absolute;
             left: 20px;
@@ -95,12 +100,14 @@
         1996-2006.<br> The slider bar allows the user<br> to cycle through the attacks<br> by year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
         Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.  The viewer can<br> also zoom in and out to<br> better view the map.
         </p>
-        <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p2>
+        <img src="data/terrorism_legend.png"
+        style="width:180px;height:200px;"><img>
+        <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p>
     </div>
     <div id="map">
     <h2></h2>
     <div id="slider">
-        <input type="range" value="1996" class="slider">
+        <input type="range" value="2006" class="slider">
         <span id="year"></span>
     </div>
     <div id='tooltip'></div>
@@ -263,7 +270,7 @@
             var min = 1996,
                 max = 2006;
 
-            var output = d3.select("#year").text(min);
+            var output = d3.select("#year").text(max);
 
             d3.select(".slider")
                 .attr("min", min)
@@ -306,7 +313,7 @@
                     return "#d73027";
                   }
                   if (d== ['2004']) {
-                    return "pink";
+                    return "#f46d43";
                   }
                   if (d== ['2003']) {
                     return "#fdae61";
@@ -315,22 +322,22 @@
                     return "#fee08b";
                   }
                   if (d== ['2001']) {
-                    return "#d9ef8b";
+                    return "#ffffbf";
                   }
                   if (d== ['2000']) {
-                    return "#a6d96a";
+                    return "#d9ef8b";
                   }
                   if (d== ['1999']) {
-                    return "#66bd63";
+                    return "#a6d96a";
                   }
                   if (d== ['1998']) {
-                    return "#1a9850";
+                    return "#66bd63";
                   }
                   if (d== ['1997']) {
-                    return "#006837";
+                    return "#1a9850";
                   }
                   if (d== ['1996']) {
-                    return "#1a9850";
+                    return "#006837";
                   }
 
             }
