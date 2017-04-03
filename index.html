@@ -11,74 +11,81 @@
     body {
             padding: 0;
             margin: 0;
-            background: #d3d3d3;
+            background: #5a4a4a;
             font-family: Raleway, sans-serif;
         }
     h1,
-    h2 {
+    h2  {
             position: absolute;
             left: 20px;
-            top: 10px;
+            top: 5px;
             font-weight: 100;
             color: #005DAA;
         }
-        h1{
+    h1  {
             font-size: 2em;
         }
-        h2 {
-            font-size: 1.5em;
+    h2  {
+            font-size: 20px;
             font-style: italic;
+            color: #000;
+            max-width: 225px;
             top: 85px;
+            padding-top: 3.5px;
+            padding-bottom: 2px;
         }
-        h3 {
+    h3  {
             font-size: 1.5em;
             bottom: 50px;
+            color: #005DAA;
         }
-        p {
+    p   {
             position: absolute;
             left: 20px;
-            top: 110px;
+            top: 140px;
             font-size: 15px;
             color: #005DAA;
         }
-        img {
+    img {
             position: absolute;
-            left: 20px;
-            top: 420px;
+            left: 30px;
+            top: 437px;
         }
-        p2 {
+    p2  {
             position: absolute;
             left: 20px;
-            top: 655px;
+            top: 650px;
             font-size: 12px;
+            color: #005DAA;
         }
-        #map {
+    #map {
             width: 900px;
             height: 625px;
             margin: 25px 245px auto;
             border: 2px solid #fff;
         }
-        .countries {
-            stroke: #5a4a4a;
+    .countries {
+            stroke: #000;
         }
-        .hover{
+    .hover{
             fill: #005DAA;
         }
-        .slider {
+    .slider {
             position: absolute;
             left: 245px;
             top: 655px;
             padding: 5px;
         }
-        #year {
+    #year {
             position: absolute;
             top: 675px;
+            left: 295px;
             padding-top: 5px;
         }
-        .hidden {
+    .hidden {
             display: none;
         }
-        div.tooltip {
+    div.tooltip {
             color: #222;
             background-color: #fff;
             padding: .5em;
@@ -93,21 +100,19 @@
 <body>
 
 
-
-    <div id='sidebar'>
         <h1>A Decade of<br> Terrorism</h1>
+        <div id="map">
+        <h2></h2>
         <p> The dots on the map<br> represent terrorist attacks <br>that have taken place around<br> the world from
-        1996-2006.<br> The slider bar allows the user<br> to cycle through the attacks<br> by year. The <a href src="http://www.start.umd.edu/gtd/contact/">Global Terrorism<br>
-        Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href src="http://www.start.umd.edu/gtd/using-gtd/">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.  The viewer can<br> also zoom in and out to<br> better view the map.
+        1996-2006.<br> The slider bar allows the user<br> to cycle through the attacks<br> by year. The <a href="http://www.start.umd.edu/gtd/contact/" style="color:#005DAA">Global Terrorism<br>
+        Database</a> is maintained by<br> the University of Maryland.<br> Please see the <a href="http://www.start.umd.edu/gtd/using-gtd/" style="color:#005DAA">methodology<br> page</a> for a detailed explanation<br> of the data and how it was<br> collected.  The viewer can<br> also zoom in and out to<br> better view the map.
         </p>
         <img src="data/terrorism_legend.png"
         style="width:180px;height:200px;"><img>
-        <p2>Map Authored by:<br> Francisco Lovko<br> For: Map673</p>
+        <p2>Map Authored by:<br> <a href="https://flovko.github.io/" style="color:#005DAA">Francisco Lovko</a><br> For: Map673</p>
     </div>
-    <div id="map">
-    <h2></h2>
     <div id="slider">
-        <input type="range" value="2006" class="slider">
+        <input type="range" value="0" class="slider">
         <span id="year"></span>
     </div>
     <div id='tooltip'></div>
@@ -120,11 +125,8 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script src="https://d3js.org/d3-geo.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
     <script src="https://d3js.org/d3-drag.v1.min.js"></script>
     <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
-    <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
 
     <script>
         var width = 900,
@@ -134,21 +136,20 @@
         var tooltip = d3.select('#map').append('div')
             .attr('class', 'hidden tooltip');
 
-
         var svg = d3.select("#map")
             .append("svg")
             .attr("width", width)
             .attr("height", height)
             .call(d3.behavior.zoom()
+            .scaleExtent([1, 30])
             .on("zoom", function () {
             svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
             }))
             .append("g")
 
-
         var projection = d3.geoRobinson()
             .center([10.0, 20])
-            .scale(180)
+            .scale(160)
             .translate([width / 2, height / 2]);
 
         var geoPath = d3.geo.path()
@@ -156,66 +157,10 @@
 
         queue()
             .defer(d3.json, "data/countries_geo.json")
-            .defer(d3.csv, "data/mil_xpnd.csv")
             .defer(d3.csv, "data/decade_of_terrorism.csv")
             .await(makeMap);
 
-        function makeMap(error, countries, perOfGdp, attacks) {
-
-            var dataArray = []; // empty array
-
-            // loop through each country
-            perOfGdp.forEach(function(country) {
-                // loop through each country's properties
-                for(var key in country) {
-                    // if the property value is a number and not null
-                    if(Number(key) && country[key] != 'null'){
-                        // push to the array
-                        dataArray.push(country[key]);
-                    }
-
-                }
-
-            });
-
-            console.log(dataArray) // dataArray with only numbers
-
-            var breaks = ss.jenks(dataArray, 5); // the breaks
-
-            breaks.shift();
-            breaks.pop();
-
-            var colors = ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"];
-
-            // loop through all the countries
-            countries.features.map(function(country) {
-
-                // shortcut for the country id
-                var countryId = country.id;
-
-                // loop through the CSV data array
-                perOfGdp.map(function(countryData) {
-
-                    // if country code id and CSV code match
-                    if (countryId === countryData['country_code']) {
-
-                        // replace country props with CSV data
-                        country.properties = countryData
-                    }
-
-                })
-
-            })
-
-            var jenks = d3.scale.threshold()
-                .domain(breaks)
-                .range(colors);
-
-            var currentYear = [];
-            attacks.forEach(function(attacks) {
-                var attackYear = attacks.year
-                currentYear.push(attackYear)
-            });
+        function makeMap(error, countries, attacks) {
 
             var gdp = svg.append("g")
                 .selectAll("path")
@@ -224,19 +169,15 @@
                 .append("path")
                 .attr("d", geoPath)
                 .attr("class", "countries")
-                .attr("fill", "#313131")
-                // function(d) {
-                //     return jenks(d.properties["1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006"]);
-                // })
-                // .on("mouseover", function(d) {
-                //     d3.select("h2").html(d.properties.country + ': ' +
-                //         "<br/>" + Math.round(d.properties['1996']) + '% ' + 'of GDP');
-                //     d3.select(this).attr("class", "countries hover");
-                // })
-                // .on("mouseout", function(d) {
-                //     d3.select("h2").text("");
-                //     d3.select(this).attr("class", "countries");
-                // })
+                .attr("fill", "#d3d3d3")
+                .on("mouseover", function(d) {
+                    d3.select("h2").html(d.properties.name);
+                    d3.select(this).attr("class", "countries hover");
+                })
+                .on("mouseout", function(d) {
+                    d3.select("h2").text("");
+                    d3.select(this).attr("class", "countries");
+                })
 
             var terrorInc = svg.append("g")
                 .selectAll("circle")
@@ -254,14 +195,17 @@
                 .attr("r", 1 )
                 .attr("d", geoPath)
                 .attr("class", "yearMatch")
-                .on('mousemove', function(d, counts) {
+                .on('mousemove', function(d) {
                   var mouse = d3.mouse(svg.node()).map(function(d){
                     return parseInt(d);
                   });
                 tooltip.classed('hidden', false)
                     .attr('style', 'center:' + (mouse[0,0]) +
                             'px; center:' + (mouse[0,0]) + 'px')
-                    tooltip.html(d.country_txt+ "<br>" + d.city +"<br/>" + d.year);
+                    tooltip.html("Country: " + d.country_txt+ "<br>" + "City: " + d.city +"<br/>" +
+                    d.year + "<br/>" + "Group: " + d.gname + "<br/>" + "Casualties: " +
+                    d.nkill);
+
                 })
                 .on('mouseout', function() {
                     tooltip.classed('hidden',true)
@@ -279,11 +223,10 @@
                 .attr("step", "1")
                 .on("input", function() {
                     update(this.value)
-                    // updateOne(this.value);
                 });
 
             function update(val) {
-                output.text(Number(val).toLocaleString());
+                output.text(Number(val));
                 terrorInc.attr("display", function(d) {
                     if (val < Number(d.year)) {
                         return "none";
@@ -292,20 +235,12 @@
 
             }
 
-          //   function updateOne(val){
-          //      output.text(Number(val).toLocaleString());
-          //      gdp.attr("fill",function(d) {
-          //          if (val > Number(d.properties["1996"])) {
-          //          }
-          //      })
-          //  }
            d3.selectAll(".yearMatch")
 
             function yearMatch(attacks,terrorInc) {
 
                   var d = Number(attacks.year)
                   if (d == ['2006']) {
-                    console.log()
                     this.parentElement.appendChild(this);
                     return "#a50026";
                   }
@@ -341,23 +276,6 @@
                   }
 
             }
-
-            d3.entries(attacks)
-
-            var counts = d3.nest()
-                .key(function(d) {
-                    return d.year;
-                })
-                .sortKeys(d3.ascending)
-                .key(function(d) {
-                    return d.country_txt;
-                })
-                .sortKeys(d3.alphabetically)
-                .rollup(function(leaves) {
-                    return leaves.length;
-                })
-                .entries(attacks);
-
 
         } // end of makeMap()
     </script>
